@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat GPT</title>
+	<style type="text/css">
+		.loading{
+			display: none;
+		}
+	</style>
+</head>
+<body>
+
+<input type="text" id="user-message">
+<button id="submit-button">Submit</button>
+<div class="loading">Loading...</div>
+<div id="chat-history"></div>
+
+
+<script>
+	const API_KEY = "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";
+	const chatHistory = document.getElementById("chat-history");
+	const userMessage = document.getElementById("user-message");
+	const submitButton = document.getElementById("submit-button");
+	const loading = document.querySelector(".loading");
+
+	submitButton.addEventListener("click", function() {
+		sendMessageToGPT3(userMessage.value);
+	});
+
+	async function sendMessageToGPT3(message){
+		loading.style.display = "block";
+		const response = await fetch("https://api.openai.com/v1/engines/text-davinci-001/completions", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${API_KEY}`
+			},
+			body: JSON.stringify({
+				prompt: message,
+				max_tokens: 100,
+				temperature: 0.5
+			})
+		});
+
+		const data = await response.json();
+		const reply = data.choices[0].text;
+		chatHistory.innerHTML = `<br>You: ${message}`;
+		chatHistory.innerHTML = `<br>Chatbot: ${reply}`;
+		loading.style.display = "none";
+	}
+</script>
+
+</body>
+</html>
